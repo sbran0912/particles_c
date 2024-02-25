@@ -167,6 +167,19 @@ void e2_applyForce(Shape *shape, Vector2 force, float angForce) {
     shape->angAccel += angForce / shape->mass;
 }
 
+void e2_applyFriction(Shape* shape) {
+    float coefficient = 0.5f;
+    Vector2 frictForce = shape->velocity;
+    e2_vecNorm(&frictForce);
+    e2_vecScale(&frictForce, coefficient * -1); // in Gegenrichtung
+    e2_vecLimit(&frictForce, e2_mag(shape->velocity));
+
+    float frictAngDirection = shape->angVelocity < 0 ? 1 : -1; // in Gegenrichtung
+    float frictAngForce = e2_limitNum(coefficient * 0.05 * frictAngDirection, abs(shape->angVelocity));
+
+    e2_applyForce(shape, frictForce, frictAngForce);
+}
+
 void e2_shapeResetPos(Shape *shape, Vector2 v) {
     shape->funcResetPos(shape, v);
 }

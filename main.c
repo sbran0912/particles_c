@@ -45,6 +45,10 @@ void listRemove(List* list) {
 int main() {
     List list = {NULL, NULL, 0}; //init linked-list
     Shape walls[2] = {e2_Box(100, 800, 400, 50), e2_Box(600, 1000,400,50)};
+    walls[0].mass = INFINITY;
+    walls[0].inertia = INFINITY;
+    walls[1].mass = INFINITY;
+    walls[1].inertia = INFINITY;
 
     const int screenWidth = 1600;
     const int screenHeight = 1200; 
@@ -67,7 +71,7 @@ int main() {
                 e2_shapeUpdate(&walls[i]);
                 e2_shapeDraw(&walls[i], 3, RED);
             }
-            e2_applyForce(&current->particle, e2_VecScale((Vector2){0, 2}, current->particle.mass), 0);
+            e2_applyForce(&current->particle, (Vector2){0, 4}, 0); //gravity
             e2_shapeUpdate(&current->particle);
             e2_shapeDraw(&current->particle, 1, (Color){0, 0, 0, current->lifespan});
             current->lifespan = current->lifespan - 2;
