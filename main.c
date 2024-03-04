@@ -29,22 +29,25 @@ void listAppend(List* list, Shape shape) {
     
 }
 
-void listRemove(List* list) {
+Node* listRemove(List* list) {
     if (list->size > 0) {
-        printf("lösche head: %p\n", list->head);
         Node* tmp = list->head->next;
         free(list->head);
         list->head = tmp;
         list->size--;
+
         if (list->size == 0) {
             list->tail = NULL;
         }
     }
+    return list->head;
 }
 
 int main() {
     List list = {NULL, NULL, 0}; //init linked-list
-    Shape walls[2] = {e2_Box(100, 800, 400, 50), e2_Box(600, 1000,400,50)};
+    Shape walls[2] = {e2_Box(400, 700, 400, 50), e2_Box(600, 900,800,50)};
+    _rotateBox(&walls[0], 0.5);
+    _rotateBox(&walls[1], -0.5);
     walls[0].mass = INFINITY;
     walls[0].inertia = INFINITY;
     walls[1].mass = INFINITY;
@@ -61,9 +64,16 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
         Shape particle = e2_Ball(GetMouseX(),GetMouseY(), 10);
-        particle.velocity = (Vector2) {e2_random(-10,10), e2_random(-10,10) };
+        particle.velocity = (Vector2) {e2_random(-5,5), e2_random(-5,5) };
         listAppend(&list, particle);
+        //printf("Anzahl Particel: %i\n", list.size);
         Node* current = list.head;
+        if (current->lifespan == 0) {
+            //printf("head vorher: %p ", current);
+            current = listRemove(&list);
+            //printf("head nacher: %p\n", current);
+        };
+
         while (current != NULL) {
             // check walls
             for (size_t i = 0; i < 2; i++) {
@@ -74,12 +84,10 @@ int main() {
             e2_applyForce(&current->particle, (Vector2){0, 4}, 0); //gravity
             e2_shapeUpdate(&current->particle);
             e2_shapeDraw(&current->particle, 1, (Color){0, 0, 0, current->lifespan});
-            current->lifespan = current->lifespan - 2;
+            current->lifespan = current->lifespan - 1;
             if (current->lifespan <0) current->lifespan = 0;
             current = current->next;
-        }  
-        
-          
+        }       
     	EndDrawing();
     }
 
