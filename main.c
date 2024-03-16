@@ -13,8 +13,7 @@ typedef struct list_t {
 } List;
 
 void listAppend(List* list, Shape shape) {
-    Node* new = NULL;
-    new = malloc(sizeof(Node));
+    Node* new = malloc(sizeof(Node));
     new->particle = shape;
     new->lifespan = 256;
     new->next = NULL;
@@ -81,6 +80,12 @@ int main() {
                 e2_shapeUpdate(&walls[i]);
                 e2_shapeDraw(&walls[i], 3, RED);
             }
+            Node* next = current->next;
+            while (next != NULL) {
+                e2_checkColl(&current->particle, &next->particle);
+                next = next->next;
+            };
+            
             e2_applyForce(&current->particle, (Vector2){0, 4}, 0); //gravity
             e2_shapeUpdate(&current->particle);
             e2_shapeDraw(&current->particle, 1, (Color){0, 0, 0, current->lifespan});
